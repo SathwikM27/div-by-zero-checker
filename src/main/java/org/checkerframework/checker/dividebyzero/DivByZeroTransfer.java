@@ -112,7 +112,7 @@ public class DivByZeroTransfer extends CFTransfer {
                 }
                 return top;
             case MINUS:
-                // If either side is non-zero, the result is non-zero. Otherwise, it's top, which might include zero.
+                
                 if (equal(lhs, reflect(Positive.class)) && equal(rhs, reflect(Positive.class))) {
                     return reflect(Top.class);
                 } else if (equal(lhs, reflect(Negative.class)) && equal(rhs, reflect(Negative.class))) {
@@ -138,6 +138,19 @@ public class DivByZeroTransfer extends CFTransfer {
                 return top;
     
             case DIVIDE:
+                // Division by zero is undefined
+                if (equal(rhs, reflect(Zero.class))) {
+                    return bottom;
+                }
+                // Zero divided by anything is zero
+                if (equal(lhs, reflect(Zero.class))) {
+                    return reflect(Zero.class);
+                }
+                // Non-zero divided by non-zero is non-zero
+                if (equal(lhs, reflect(NonZero.class)) && equal(rhs, reflect(NonZero.class))) {
+                    return reflect(NonZero.class);
+                }
+                return top;
             default:
                 return top();
             }
