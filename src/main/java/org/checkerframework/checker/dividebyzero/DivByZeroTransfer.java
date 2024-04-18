@@ -94,7 +94,59 @@ public class DivByZeroTransfer extends CFTransfer {
             AnnotationMirror lhs,
             AnnotationMirror rhs) {
         // TODO
-        return top();
+        AnnotationMirror top = top();
+        AnnotationMirror bottom = bottom();
+    
+        // Simplified handling based on binary operators
+        switch (operator) {
+            case PLUS:
+                if (equal(lhs, reflect(Positive.class)) && equal(rhs, reflect(Positive.class))) {
+                    return reflect(NonZero.class);
+                } else if (equal(lhs, reflect(Negative.class)) && equal(rhs, reflect(Negative.class))) {
+                    return reflect(NonZero.class);
+                } else if (equal(lhs, reflect(Positive.class)) && equal(rhs, reflect(Negative.class))) {
+                    return reflect(Top.class);
+                } 
+                else if (equal(lhs, reflect(Zero.class)) && equal(rhs, reflect(Zero.class))) {
+                    return reflect(Zero.class);
+                }
+                return top;
+            case MINUS:
+                // If either side is non-zero, the result is non-zero. Otherwise, it's top, which might include zero.
+                if (equal(lhs, reflect(Positive.class)) && equal(rhs, reflect(Positive.class))) {
+                    return reflect(Top.class);
+                } else if (equal(lhs, reflect(Zero.class)) && equal(rhs, reflect(Zero.class))) {
+                    return reflect(Zero.class);
+                }
+                return top;
+    
+            case TIMES:
+                // Zero times anything is zero
+                if (equal(lhs, reflect(Zero.class)) || equal(rhs, reflect(Zero.class))) {
+                    return reflect(Zero.class);
+                }
+                // Non-zero times non-zero is non-zero
+                if (equal(lhs, reflect(NonZero.class)) && equal(rhs, reflect(NonZero.class))) {
+                    return reflect(NonZero.class);
+                }
+                return top;
+    
+            case DIVIDE:
+            case MOD:
+                // Division or mod by zero is undefined - should be handled by check before this
+                if (equal(rhs, reflect(Zero.class))) {
+                    return bottom;  // This case should ideally throw an exception or be flagged elsewhere
+                }
+                if (equal(lhs, reflect(Zero.class)) && !equal(rhs, reflect(Zero.class))) {
+                    return reflect(Zero.class);
+                }
+                if (equal(lhs, reflect(NonZero.class)) && equal(rhs, reflect(NonZero.class))) {
+                    return reflect(NonZero.class);
+                }
+                return top;
+            default:
+                return top();
+            }
     }
 
     // ========================================================================
