@@ -8,7 +8,7 @@ import org.checkerframework.framework.qual.QualifierForLiterals;
 import org.checkerframework.framework.qual.LiteralKind;
 
 @Target({ElementType.TYPE_USE, ElementType.TYPE_PARAMETER})
-@SubtypeOf({})
+@SubtypeOf(Top.class)
 @QualifierForLiterals(LiteralKind.ALL)
 public @interface NonZero {
 }
