@@ -71,9 +71,61 @@ public class DivByZeroTransfer extends CFTransfer {
             Comparison operator,
             AnnotationMirror lhs,
             AnnotationMirror rhs) {
-        // TODO
-        return lhs;
-    }
+                AnnotationMirror zero = reflect(Zero.class);
+                AnnotationMirror nonZero = reflect(NonZero.class);
+                AnnotationMirror positive = reflect(Positive.class);
+                AnnotationMirror negative = reflect(Negative.class);
+                AnnotationMirror top = top();
+            
+                switch (operator) {
+                    case EQ:
+                        if (equal(rhs, zero)) {
+                            return zero;
+                        }
+                        break;
+            
+                    case NE:
+                        if (equal(rhs, zero)) {
+                            return nonZero;
+                        }
+                        break;
+            
+                    case LT:
+                        if (equal(rhs, zero)) {
+                            return negative;
+                        }
+                        if (equal(rhs, positive)) {
+                            return negative;
+                        }
+                        break;
+            
+                    case LE:
+                        if (equal(rhs, zero)) {
+                            return nonZero;  
+                        }
+                        break;
+            
+                    case GT:
+                        if (equal(rhs, zero)) {
+                            return positive;
+                        }
+                        if (equal(rhs, negative)) {
+                            return positive;
+                        }
+                        break;
+            
+                    case GE:
+                        if (equal(rhs, zero)) {
+                            return nonZero;  
+                        }
+                        break;
+            
+                    default:
+                        return top;
+                }
+                return lhs;
+            }
+    
 
     /**
      * For an arithmetic expression (lhs `op` rhs), compute the point in the
