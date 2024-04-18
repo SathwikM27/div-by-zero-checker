@@ -1,4 +1,3 @@
-package org.checkerframework.checker.dividebyzero.qual;
 
 package org.checkerframework.checker.dividebyzero.qual;
 
